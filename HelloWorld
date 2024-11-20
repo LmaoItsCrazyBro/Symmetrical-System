@@ -1,91 +1,35 @@
-wait(0.5)
 local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
-local Teams = game:GetService("Teams")
-local StarterPlayer = game:GetService("StarterPlayer")
-local LocalPlayer = Players.LocalPlayer
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local watchedPlayers = {"ItsYoDawgWsgGng", "Laylay_4kla"}
 
-if LocalPlayer.Name == "M1RD3RCAUGHT" or LocalPlayer.Name == "STK_kets4eki" or LocalPlayer.Name == "Laylay_4kla" or LocalPlayer.Name == "ItsYoDawgWsgGng" then
+local function sendNotification(title, text, iconId, duration)
     StarterGui:SetCore("SendNotification", {
-        Title = "Hello, Script Owner.",
-        Text = "You have specialized access.",
-        Icon = "rbxassetid://1",
-        Duration = 10
+        Title = title,
+        Text = text,
+        Icon = iconId or "rbxassetid://1",
+        Duration = duration or 10
     })
-else
-    warn("OK (5)")
 end
-wait(0.3)
-for i, v in pairs(Players:GetChildren()) do
-    if v.Name == "M1RD3RCAUGHT" or v.Name == "STK_kets4eki" or v.Name == "Laylay_4kla" or v.Name == "ItsYoDawgWsgGng" then
-        StarterGui:SetCore("SendNotification", {
-            Title = "Alert!",
-            Text = "Owner of script is in this server.",
-            Icon = "rbxassetid://1",
-            Duration = 10
-        })
-        wait()
-        StarterGui:SetCore("SendNotification", {
-            Title = "UserName:",
-            Text = tostring(v.Name),
-            Icon = "rbxassetid://1",
-            Duration = 10
-        })
-    else
-        warn("OK (3)")
-    end
-end
-wait(0.5)
-local syncEvent = Instance.new("RemoteEvent")
-syncEvent.Name = "Script_Remote_Event"
-syncEvent.Parent = ReplicatedStorage
 
-syncEvent.OnClientEvent:Connect(function(Player)
-    if Player.Name == "M1RD3RCAUGHT" or Player.Name == "STK_kets4eki" or Player.Name == "Laylay_4kla" or Player.Name == "ItsYoDawgWsgGng" then
-        local NewTeam = Instance.new("Team")
-        NewTeam.Name = "Script_Owner"
-        NewTeam.Parent = game:GetService("Teams")
-        NewTeam.TeamColor = BrickColor.new("Maroon")
-
-        for i, v in pairs(Players:GetChildren()) do
-            if v.Name == "M1RD3RCAUGHT" or v.Name == "STK_kets4eki" or v.Name == "Laylay_4kla" or v.Name == "ItsYoDawgWsgGng" then
-                v.Team = NewTeam
-            end
+local function isWatchedPlayer(playerName)
+    for _, name in ipairs(watchedPlayers) do
+        if playerName == name then
+            return true
         end
-    else
-        warn("---")
     end
-end)
-wait(0.5)
-game.Players.PlayerAdded:Connect(function(Player)
-    if Player.Name == "M1RD3RCAUGHT" or Player.Name == "STK_kets4eki" or Player.Name == "Laylay_4kla" or Player.Name == "ItsYoDawgWsgGng" then
-        StarterGui:SetCore("SendNotification", {
-            Title = "Alert!",
-            Text = "The owner of the script has joined!",
-            Icon = "rbxassetid://1",
-            Duration = 10
-        })
-        wait(0.2)
-        StarterGui:SetCore("SendNotification", {
-            Title = "UserName:",
-            Text = tostring(Player.Name),
-            Icon = "rbxassetid://1",
-            Duration = 10
-        })
-    end
-end)
-wait(1)
-local syncEvent = ReplicatedStorage:FindFirstChild("Script_Remote_Event")
+    return false
+end
 
-if syncEvent and ReplicatedStorage:FindFirstChild("Script_Remote_Event") then
-    syncEvent:FireServer()
-end
-wait(1)
-for i, v in pairs(game.Players:GetChildren()) do
-    if v.Name == "M1RD3RCAUGHT" or v.Name == "STK_kets4eki" or v.Name == "Laylay_4kla" or v.Name == "ItsYoDawgWsgGng" then
-        v.TeamColor = BrickColor.new("Lime green")
-        wait(0.5)
-        v.TeamColor = BrickColor.new("Maroon")
+for _, player in pairs(Players:GetPlayers()) do
+    if isWatchedPlayer(player.Name) then
+        sendNotification("Alert!", "Owner of script is in this server.", "rbxassetid://1", 10)
+        sendNotification("UserName:", tostring(player.Name), "rbxassetid://1", 10)
     end
 end
+
+Players.PlayerAdded:Connect(function(player)
+    if isWatchedPlayer(player.Name) then
+        sendNotification("Alert!", "Owner of script has joined the game!", "rbxassetid://1", 10)
+        sendNotification("UserName:", tostring(player.Name), "rbxassetid://1", 10)
+    end
+end)
