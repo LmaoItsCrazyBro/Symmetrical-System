@@ -11,6 +11,12 @@ local function sendNotification(title, text, iconId, duration)
     })
 end
 
+if getgenv().owner_watch_assigned_bool then
+    warn("Already assigned BoolValue to LocalPlayer")
+else
+    print("Owner_Watch Boolean == false")
+end
+
 local function isWatchedPlayer(playerName)
     for _, name in ipairs(watchedPlayers) do
         if playerName == name then
@@ -22,14 +28,21 @@ end
 
 for _, player in pairs(Players:GetPlayers()) do
     if isWatchedPlayer(player.Name) then
-        sendNotification("Alert!", "Owner of script is in this server.", "rbxassetid://1", 10)
-        sendNotification("UserName:", tostring(player.Name), "rbxassetid://1", 10)
+        getgenv().owner_watch_assigned_bool = true
+        task.wait(0.3)
+        sendNotification("Alert!", "Owner of Zacks Easy Hub is in this server.", "rbxassetid://1", 10)
+        sendNotification("Owner:", tostring(player.Name), "rbxassetid://1", 10)
     end
 end
 
 Players.PlayerAdded:Connect(function(player)
     if isWatchedPlayer(player.Name) then
-        sendNotification("Alert!", "Owner of script has joined the game!", "rbxassetid://1", 10)
-        sendNotification("UserName:", tostring(player.Name), "rbxassetid://1", 10)
+        if getgenv().owner_watch_assigned_bool or getgenv().owner_watch_assigned_bool == true then
+            sendNotification("Alert!", "Owner of Zacks Easy Hub just rejoined the server.", "rbxassetid://1", 10)
+            sendNotification("Owner:", tostring(player.Name), "rbxassetid://1", 10)
+        else
+            sendNotification("Alert!", "Owner of Zacks Easy Hub has joined the game!", "rbxassetid://1", 10)
+            sendNotification("Owner:", tostring(player.Name), "rbxassetid://1", 10)
+        end
     end
 end)
